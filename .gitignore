@@ -1,0 +1,7 @@
+# Ignore PDF, ZIP, and RAR Extensions
+*.pdf
+*.rar
+*.zip
+# Ignore Pictures that maybe included in the folders
+*.png
+*.jpeg
