@@ -57,7 +57,7 @@ bool item_cmp(char *type){
 }
 
 void main_menu();
-void queue_list();
+void queue_list(const char *_command);
 void push_item();
 void pop_item();
 void push(input *input);
@@ -82,19 +82,21 @@ void main_menu(){
         fflush(stdin);
         switch(ans){
             case 1:
-                queue_list();
+                queue_list("view");
             case 2:
                 push_item();
             case 3:
                 pop_item();
             case 4:
-                exit(EXIT_SUCCESS);
+                while(front != NULL)
+                    pop();
+                queue_list("exit");
             default:
                 continue;
         }
     } while(1);
 }
-void queue_list(){
+void queue_list(const char *_command){
     int i;
     int num = 1;
     node *cur;
@@ -120,6 +122,10 @@ void queue_list(){
     }
     for(i = 0; i < line; i++){
         printf("\xCD");
+    }
+    if(strcmp(_command, "exit") == 0){
+        getch();
+        exit(EXIT_SUCCESS);
     }
     getch();
     clrscr();
