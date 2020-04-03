@@ -73,6 +73,10 @@ void main_menu(){
             case 3:
                 take_order();
             case 4:
+                while(node_length() != 0){
+                    int list_length = node_length();
+                    dequeue(&list_length);
+                }
                 exit(EXIT_SUCCESS);
             default:
                 continue;
