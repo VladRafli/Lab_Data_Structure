@@ -16,6 +16,7 @@ struct Motorcycle_Parts{
     int qty;
     long int price;
     node *next;
+    node *prev;
 };
 node *front = NULL;
 node *rear = NULL;
@@ -30,10 +31,13 @@ int node_length(){
     node *cur;
     if(front == NULL)
         return length;
-    for(cur = front; cur->next != front; cur = cur->next){
-        length++;
+    else{
+        length = 1;
+        for(cur = front; cur->next != front; cur = cur->next){
+            length++;
+        }
+        return length;
     }
-    return length;
 }
 
 void main_menu();
@@ -86,15 +90,9 @@ void view_order(char *__view_mode){
         printf("\xBA %3d. \xBA %-29s \xBA %8d \xBA   %-8d \xBA\n", num++, "NULL", 0, 0);
     }
     else{
-        //Problem at these lines
         for(cur = front; cur->next != front; cur = cur->next)
             printf("\xBA %3d. \xBA %-29s \xBA %8d \xBA   %-8d \xBA\n", num++, cur->parts, cur->qty, cur->price);
-        //End of Problem
-        /**
-         * Problem Description:
-         * When call view_order function after successfull input, those line make some error.
-         * Severity: Severe
-         **/
+        printf("\xBA %3d. \xBA %-29s \xBA %8d \xBA   %-8d \xBA\n", num++, cur->parts, cur->qty, cur->price);
     }
     line(LINE_LEN);
     if(strcmp(__view_mode, "normal") == 0){
@@ -111,13 +109,13 @@ void add_order(){
         gets(input.parts);
         fflush(stdin);
     } while(strlen(input.parts) < 3 || strlen(input.parts) > 30);
-    printf("\n\n");
+    printf("\n");
     do{
         printf("Input Quantity of The Motorcycle's Part [1..20]: ");
         scanf("%d", &input.qty);
         fflush(stdin);
     } while(input.qty < 1 || input.qty > 20);
-    printf("\n\n");
+    printf("\n");
     do{
         printf("Input Price of The Motorcycle's Part : ");
         scanf("%d", &input.price);
@@ -134,6 +132,7 @@ void add_order(){
 }
 void take_order(){
     int ans;
+    int list_length = node_length();
     clrscr;
     if(front == NULL){
         printf("--- There is No Order in The List ---");
@@ -146,9 +145,10 @@ void take_order(){
     view_order("view only");
     printf("\n\n");
     do{
-        printf("Input Number of The Order [1..4]: ");
+        printf("Input Number of The Order [1..%d]: ", list_length);
         scanf("%d", &ans);
-    } while(ans < 1 || ans > node_length());
+    } while(ans < 1 || ans > list_length);
+    printf("\n\n");
     //Dequeue
     dequeue(&ans);
     //End of Dequeue
@@ -168,8 +168,8 @@ void enqueue(input *input){
     new->price = input->price;
     new->next = NULL;
     if(front == NULL){
-        new->next;
         front = new;
+        front->next = new;
         rear = front;
     }
     else{
@@ -179,8 +179,8 @@ void enqueue(input *input){
     }
 }
 void dequeue(int *ans){
-    node *ptr;
-    node *preptr;
+    node *ptr = front;
+    node *preptr = front;
     if(front->next == front){
         free(front);
         front = NULL;
