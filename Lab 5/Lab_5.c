@@ -174,12 +174,16 @@ void enqueue(input *input){
     if(front == NULL){
         front = new;
         front->next = new;
+        front->prev = new;
         rear = front;
+        return;
     }
     else{
         rear->next = new;
         new->next = front;
+        new->prev = rear;
         rear = rear->next;
+        return;
     }
 }
 void dequeue(int *ans){
@@ -189,14 +193,27 @@ void dequeue(int *ans){
         free(front);
         front = NULL;
         rear = NULL;
+        return;
     }
     else{
         while(ptr->key != *ans)
             ptr = ptr->next;
         while(preptr->next != ptr)
             preptr = preptr->next;
-        preptr->next = ptr->next;
-        ptr->next = NULL;
-        free(ptr);
+        if(ptr == front){
+            front = front->next;
+            preptr->next = front;
+            ptr->next = NULL;
+            ptr->prev = NULL;
+            free(ptr);
+            return;
+        }
+        else{
+            preptr->next = ptr->next;
+            ptr->next = NULL;
+            ptr->prev = NULL;
+            free(ptr);
+            return;
+        }
     }
 }
