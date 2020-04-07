@@ -161,59 +161,72 @@ void take_order(){
     clrscr;
     main_menu();
 }
+/**
+ Dobuly Circular Linked List (Should not be)
+ **/
 void enqueue(input *input){
-    int key = node_length() + 1;
+    int key = node_length() + 1; //Variable for Node Keys
     //Allocate Memory for New Node
     node *new = (node *) malloc(sizeof(node));
-    //Input Data to New Node
+    /* Input Data to New Node */
     new->key = key; //Key used for locating desired data at take order function
     strcpy(new->parts, input->parts);
     new->qty = input->qty;
     new->price = input->price;
+    /* Next and Prev Pointers is NULL */
     new->next = NULL;
+    new->prev = NULL;
+    /* Scenario 1: If No List Available */
     if(front == NULL){
-        front = new;
-        front->next = new;
-        front->prev = new;
-        rear = front;
-        return;
+        front = new; //Point Front to New Node
+        front->next = new; //Point Front Node Next to New Node
+        front->prev = new; //Point Front Node Prev to New Node
+        rear = front; //Point Rear Node to Front Node which is New Node
+        return; //Return Function Result
     }
+    /* Scenario 2: If List is Available */
     else{
-        rear->next = new;
-        new->next = front;
-        new->prev = rear;
-        rear = rear->next;
-        return;
+        rear->next = new; //Point Rear Next to New Node
+        new->next = front; //Point New Node Next to Front Node
+        new->prev = rear; //Point New Node Prev to Rear Node
+        rear = rear->next; //Move Pointer Rear to the Next Node
+        return; //Return Function Result
     }
 }
 void dequeue(int *ans){
     node *ptr = front;
     node *preptr = front;
+    /* Scenario 1: If There is Just One Node */
     if(front->next == front){
-        free(front);
-        front = NULL;
-        rear = NULL;
-        return;
+        free(front); //Free Front Node Memory
+        front = NULL; //Point Front to NULL
+        rear = NULL; //Point Rear to NULL
+        return; //Return Function Result
     }
+    /* Scenario 2: If There is More than One Node */
     else{
+        //Move Pointer to Destination Node
         while(ptr->key != *ans)
             ptr = ptr->next;
+        //Move Pre-Pointer to Before Destination Node
         while(preptr->next != ptr)
             preptr = preptr->next;
+        /* Scenario 2.1: If Pointer At Front */
         if(ptr == front){
-            front = front->next;
-            preptr->next = front;
-            ptr->next = NULL;
-            ptr->prev = NULL;
-            free(ptr);
-            return;
+            front = front->next; //Move Pointer Front to the Next Node
+            preptr->next = front; //Point Pre-Pointer Next to Front Node
+            ptr->next = NULL; //Null Pointer Next
+            ptr->prev = NULL; //Null Pointer Prev
+            free(ptr); //Free Pointer Memory
+            return; //Return Function Result
         }
+        /* Scenario 2.2: If Pointer not In Front */
         else{
-            preptr->next = ptr->next;
-            ptr->next = NULL;
-            ptr->prev = NULL;
-            free(ptr);
-            return;
+            preptr->next = ptr->next; //Point Pre-Pointer Next to Node Next to Pointer
+            ptr->next = NULL; //Null Pointer Next
+            ptr->prev = NULL; //Null Pointer Prev
+            free(ptr); //Free Pointer Memory
+            return; //Return Function Result
         }
     }
 }
