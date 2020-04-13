@@ -214,7 +214,8 @@ void dequeue(int *ans){
         /* Scenario 2.1: If Pointer At Front */
         if(ptr == front){
             front = front->next; //Move Pointer Front to the Next Node
-            preptr->next = front; //Point Pre-Pointer Next to Front Node
+            ptr->prev->next = front; //Point Previous Next Pointer to Front Node
+            ptr->next->prev = ptr->prev; //Point Next Node Previous Pointer to Node Previous to Pointer
             ptr->next = NULL; //Null Pointer Next
             ptr->prev = NULL; //Null Pointer Prev
             free(ptr); //Free Pointer Memory
@@ -222,7 +223,8 @@ void dequeue(int *ans){
         }
         /* Scenario 2.2: If Pointer not In Front */
         else{
-            preptr->next = ptr->next; //Point Pre-Pointer Next to Node Next to Pointer
+            preptr->next = ptr->next; //Point Pre-Pointer Next to Next Node to Pointer
+            ptr->next->prev = preptr; //Point Next Node to Pointer Previous to Pre-Pointer
             ptr->next = NULL; //Null Pointer Next
             ptr->prev = NULL; //Null Pointer Prev
             free(ptr); //Free Pointer Memory
