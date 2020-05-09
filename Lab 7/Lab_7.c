@@ -1,8 +1,18 @@
+/*
+    This code written by:
+    Rafli Athala Jaskandi
+    2301943402
+    https://github.com/VladRafli
+    This code uploaded on github in this link:
+    https://github.com/VladRafli/Lab_Data_Structure
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
 #include "uttils.h"
+#define Ascending 1
+#define Descending 2
 
 typedef struct Food_Order node; //Type Definition of struct Food_Order to node
 typedef struct Input_Order input; //Type Definition of struct Input_Order to input
@@ -36,7 +46,8 @@ int node_length(){
     }
 }
 void menu();
-void view_order(char *command);
+int view_command();
+void view_order(char *command, int view_orientation);
 void add_order();
 void take_order();
 int push(input *input);
@@ -45,6 +56,7 @@ int pop(int *order_num);
 int main(int argc, char const *argv[])
 {
     char text[] = "ACE FOOD DELIVERY";
+    int view_status;
     int ans;
     do
     {
@@ -56,7 +68,8 @@ int main(int argc, char const *argv[])
             fflush(stdin);
             switch(ans){
                 case 1:
-                    view_order("view");
+                    view_status = view_command();
+                    view_order("view", view_status);
                     break;
                 case 2:
                     add_order();
@@ -79,7 +92,28 @@ void menu(){
     printf("3. Take Order\n");
     printf("4. Exit\n");
 }
-void view_order(char *command){
+int view_command(){
+    int ans;
+    clrscr;
+    printf("Choose Node Read Orientation\n");
+    printf("1. Ascending\n");
+    printf("2. Descending\n");
+    do{
+        scanf("%d", &ans);
+        fflush(stdin);
+        switch(ans){
+            case 1:
+                clrscr;
+                return Ascending;
+            case 2:
+                clrscr;
+                return Descending;
+            default:
+                continue;
+        }
+    } while(1);
+}
+void view_order(char *command, int view_orientation){
     node *cur;
     clrscr;
     printf("\t\t  ");
@@ -91,9 +125,16 @@ void view_order(char *command){
     if(front == NULL){
         printf("\t\t\t  No Data Available!\n");
     } else{
-        for(cur = front; cur->next != front; cur = cur->next)
+        if(view_orientation == 1){
+            for(cur = front; cur->next != front; cur = cur->next)
+                printf("\xBA %2d. \xBA %-15s\xBA %-20s\xBA %-32s\xBA\n", cur->no, cur->cust, cur->food, cur->addr);
             printf("\xBA %2d. \xBA %-15s\xBA %-20s\xBA %-32s\xBA\n", cur->no, cur->cust, cur->food, cur->addr);
-        printf("\xBA %2d. \xBA %-15s\xBA %-20s\xBA %-32s\xBA\n", cur->no, cur->cust, cur->food, cur->addr);
+        } else if(view_orientation == 2){
+            cur = rear;
+            printf("\xBA %2d. \xBA %-15s\xBA %-20s\xBA %-32s\xBA\n", cur->no, cur->cust, cur->food, cur->addr);
+            cur = cur->prev;
+            printf("\xBA %2d. \xBA %-15s\xBA %-20s\xBA %-32s\xBA\n", cur->no, cur->cust, cur->food, cur->addr);
+        }
     }
     line(80);
     if(strcmp(command, "view") == 0){
@@ -148,13 +189,13 @@ void take_order(){
         a = 1;
     }
     clrscr;
-    view_order("");
+    view_order("", 1);
     if(front != NULL){
         printf("Input Number of The Order [%d..%d]: ", a, b);
         scanf("%d", &ans);
-        /* Pop */
+        /*  Pop  */
         pop(&ans);
-        /****/
+        /*********/
     } else{
         printf("--- No Order to be Taken ---");
         getch();
@@ -184,13 +225,14 @@ int push(input *input){
         /* Node Connecting */
         /* Scenario 1: If No List Available */
         if(front == NULL){
-            front = rear = new; //Set Pointer Front and Rear to New Node
+            front = new; //Set Pointer Front to New Node
+            rear = new; //Set Pointer Rear to New Node
             front->next = new; //Set Front Pointer Next to New Node
             front->prev = new; //Set Front Pointer Prev to New Node
         }
         /* Scenario 2: If List is Available */
         else{
-            rear->next = new; //Point Rear Next to New Node
+            front->next = new; //Point Front Next to New Node
             new->next = front; //Point New Node Next to Front Node
             new->prev = rear; //Point New Node Prev to Rear Node
             rear = rear->next; //Move Pointer Rear to the Next Node

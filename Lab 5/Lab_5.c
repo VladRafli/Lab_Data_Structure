@@ -1,3 +1,11 @@
+/*
+    This code written by:
+    Rafli Athala Jaskandi
+    2301943402
+    https://github.com/VladRafli
+    This code uploaded on github in this link:
+    https://github.com/VladRafli/Lab_Data_Structure
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
