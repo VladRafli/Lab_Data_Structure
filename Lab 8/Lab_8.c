@@ -8,7 +8,6 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <conio.h>
 #include <time.h>
@@ -16,7 +15,7 @@
 #include "uttils.h"
 #define MAX_NAME 20
 #define SUCCESS 0
-#define FAILED 1
+#define FAILED -1
 
 char default_view_function[30] = "preorder";
 
@@ -39,13 +38,17 @@ struct Data_Input{
 void menu();
 void view(char *command); //To call this function, ensure fill the parameter, even if empty string would work
 void add();
+void remove();
 int push(input *input);
-void insert(node *root, node *temp);
+int pop(int *key);
 void order();
 void preorder(node *tree);
 void inorder(node *tree);
 void postorder(node *tree);
 void config();
+void empty_node(node *ptr);
+void replace_node(node *ptr, node *temp);
+int findMin();
 
 int main(int argc, char const *argv[])
 {
@@ -81,6 +84,9 @@ int main(int argc, char const *argv[])
                     clrscr;
                 }
                 */
+                printf("This Method is Impossible to be implemented due randomness of node data...");
+                getch();
+                clrscr;
                 break;
             case 4:
                 if(root != NULL)
@@ -158,6 +164,33 @@ void add(){
     getch();
     clrscr;
 }
+void remove(){
+    int remove_num, status;
+    char ans;
+    clrscr;
+    do{
+        printf("Input Player's Back-Number That You Want to be Removed [1..99]: ");
+        scanf("%d", &remove_num);
+        fflush(stdin);
+        status = pop(&remove_num);
+        if(status == FAILED){
+            printf("Player\'s Number didn\'t found!\n");
+            printf("Do you want to remove another number? ");
+            ans = getch();
+            fflush(stdin);
+            if(ans == 'y'){
+                clrscr;
+                continue;
+            } else
+                return;
+        } else if(status == SUCCESS){
+            printf("\n\n--- The Player Has Been Removed ---");
+            getch();
+            clrscr;
+            return;
+        }
+    } while(1);
+}
 int push(input *input){
     char node_pos[10];
     int tempLeftPos = 0;
@@ -211,7 +244,7 @@ int push(input *input){
                         printf("\n[!] Please Wait... [!]\n");
                         printf("Establishing Link to New Node");
                         for(int i = 0; i < 3; i++){
-                            usleep(100000);
+                            usleep(200000);
                             printf(".");
                         }
                         printf("\nNode Successfully Linked!\n\n");
@@ -236,7 +269,7 @@ int push(input *input){
                         printf("\n[!] Please Wait... [!]\n");
                         printf("Establishing Link to New Node");
                         for(int i = 0; i < 3; i++){
-                            usleep(10000);
+                            usleep(200000);
                             printf(".");
                         }
                         printf("\nNode Successfully Linked!\n\n");
@@ -247,6 +280,14 @@ int push(input *input){
             }
         }
     }
+}
+int pop(int *key){
+    //Not Done
+    node *ptr = root;
+    node *temp;
+    do{
+        
+    } while(1);
 }
 void order(){
     int ans;
@@ -389,4 +430,10 @@ void config(){
         clrscr;
         return;
     }
+}
+void empty_node(node *ptr){
+    ptr->leftPos = NULL;
+    ptr->rightPos = NULL;
+    strcpy(ptr->name, NULL);
+    ptr->num = NULL;
 }
