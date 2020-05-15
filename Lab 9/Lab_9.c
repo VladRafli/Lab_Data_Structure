@@ -215,20 +215,21 @@ void randomPrice(input *input){
 }
 _Bool check(node *root, input *input){
     /* I compare the code data based on ASCII Numbering, check https://www.tutorialspoint.com/c_standard_library/c_function_strcmp.htm */
+    node *ptr = root;
     while(1){
-        if(root == NULL)
+        if(ptr == NULL)
             return false;
-        else if(strcmp(root->code, input->code) == 0)
+        else if(strcmp(ptr->code, input->code) == 0)
             return true;
-        else if(strcmp(root->code, input->code) < 0)
-            root = root->left;
-        else if(strcmp(root->code, input->code) > 0)
-            root = root->right;
+        else if(strcmp(ptr->code, input->code) < 0)
+            ptr = ptr->left;
+        else if(strcmp(ptr->code, input->code) > 0)
+            ptr = ptr->right;
     }
 }
 int push(node *root, input *input){
     node *temp = (node *) malloc(sizeof(node));
-    node *ptr = root;
+    node *ptr;
     /* Scenario 1: If Memory didn't allocated */
     if(temp == NULL){
         perror("Error: ");
@@ -250,22 +251,27 @@ int push(node *root, input *input){
                 root = temp; //Place root pointer to new node
                 return SUCCESS; //Return success status
             } 
-            /* Scenario 2.2: If code in temp is smaller than code in pointer location and left leaf is empty */
-            else if(strcmp(ptr->code, temp->code) < 0 && ptr->left == NULL){
-                ptr->left = temp;
-                return SUCCESS;
-            } 
-            /* Scenario 2.3: If code in temp is bigger than code in pointer location and right leaf is empty */
-            else if(strcmp(ptr->code, temp->code) > 0 && ptr->right == NULL){
-                ptr->right = temp;
-                return SUCCESS;
-            } 
-            /* Scenario 2.3: If code in temp is smaller than code in pointer location and left leaf is not empty */
-            else if(strcmp(ptr->code, temp->code) < 0 && ptr->left != NULL)
-                ptr = ptr->left;
-            /* Scenario 2.4: If code in temp is bigger than code in pointer location and right leaf is not empty */
-            else if(strcmp(ptr->code, temp->code) > 0 && ptr->right != NULL)
-                ptr = ptr->right;
+            /* Scenario 2.2: If there is node available */
+            else{
+                ptr = root;
+                /* Scenario 2.2.1: If code in temp is smaller than code in pointer location and left leaf is empty */
+                if(strcmp(ptr->code, temp->code) < 0 && ptr->left == NULL){
+                    ptr->left = temp;
+                    return SUCCESS;
+                } 
+                /* Scenario 2.2.2: If code in temp is bigger than code in pointer location and right leaf is empty */
+                else if(strcmp(ptr->code, temp->code) > 0 && ptr->right == NULL){
+                    ptr->right = temp;
+                    return SUCCESS;
+                } 
+                /* Scenario 2.2.3: If code in temp is smaller than code in pointer location and left leaf is not empty */
+                else if(strcmp(ptr->code, temp->code) < 0 && ptr->left != NULL)
+                    ptr = ptr->left;
+                /* Scenario 2.2.4: If code in temp is bigger than code in pointer location and right leaf is not empty */
+                else if(strcmp(ptr->code, temp->code) > 0 && ptr->right != NULL)
+                    ptr = ptr->right;
+            }
+            
         }
     }
 }
@@ -283,26 +289,29 @@ void order(node *root){
     clrscr;
 }
 void preorder(node *tree){
-    if(tree != NULL){
-        printf("%s [ $ %d ]\n", tree->code,  tree->price);
-        preorder(tree->left);
-        preorder(tree->right);
+    node *ptr = tree;
+    if(ptr != NULL){
+        printf("%s [ $ %d ]\n", ptr->code,  ptr->price);
+        preorder(ptr->left);
+        preorder(ptr->right);
     }
     return;
 }
 void inorder(node *tree){
-    if(tree != NULL){
-        inorder(tree->left);
-        printf("%s [ $ %d ]\n", tree->code,  tree->price);
-        inorder(tree->right);
+    node *ptr = tree;
+    if(ptr != NULL){
+        inorder(ptr->left);
+        printf("%s [ $ %d ]\n", ptr->code,  ptr->price);
+        inorder(ptr->right);
     }
     return;
 }
 void postorder(node *tree){
-    if(tree != NULL){
-        postorder(tree->left);
-        postorder(tree->right);
-        printf("%s [ $ %d ]\n", tree->code,  tree->price);
+    node *ptr = tree;
+    if(ptr != NULL){
+        postorder(ptr->left);
+        postorder(ptr->right);
+        printf("%s [ $ %d ]\n", ptr->code,  ptr->price);
     }
     return;
 }
@@ -310,7 +319,11 @@ void postorder(node *tree){
     Note:
     The program didn't run as I expected
     In Push function seem there is a logic error, but I didn't found it
+    And my check function for checking if input data not same as data
+    Who already in node, is not working
     But when run the program, the Push function return success status
+    and check function runs as normal, but its like just get bypassed
+    Nothing happened...
     But when try to look the data, the root still in NULL condition
     Need someone to take a look at this...
 */
