@@ -1,5 +1,9 @@
-# Ignore PDF, ZIP, and RAR Extensions
+# Ignore All Document Files, ZIP, and RAR Extensions
 *.pdf
+*.txt
+*.xlsx
+*.docx
+*.ppt
 *.rar
 *.zip
 # Ignore Pictures that maybe included in the folders
