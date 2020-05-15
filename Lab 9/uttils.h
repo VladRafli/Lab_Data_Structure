@@ -6,11 +6,14 @@
 #ifndef _UTTILS_H_
 #define _UTTILS_H_
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
 
 #define clrscr system("cls")
+#define SUCCESS 0
+#define FAILED -1
 
 int line(int line_len){
     int i;
@@ -20,7 +23,7 @@ int line(int line_len){
     return 0;
 }
 
-int header(int text_len, char *text, char *type){
+int header(int text_len, const char *text, const char *type){
     int i;
     if(text_len == 0 || strlen(text) == 0){
         fprintf(stderr, "#Error on uttils.h: There's a Empty Parameter\n");
