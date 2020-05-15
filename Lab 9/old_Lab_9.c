@@ -26,7 +26,6 @@ struct Phone_Data{
     node *left;
     node *right;
 };
-node *root = NULL;
 typedef struct Data_Input input;
 struct Data_Input{
     char code[MAX_CODE];
@@ -34,20 +33,18 @@ struct Data_Input{
 };
 
 void menu();
-int add(input *input);
+int add(node **root, input *input);
 void randomCode(input *input); //This random string only used for this code only
 void randomPrice(input *input); //This random string only used for this code only
-_Bool check(input *input);
-int push(input *input);
-void update();
-_Bool search(char *input, node *ptr);
-void order();
+_Bool check(node **root, input *input);
+int push(node **root, input *input);
+void order(node *root);
 void preorder(node *tree);
 void inorder(node *tree);
 void postorder(node *tree);
-void config();
 
 int main(int argc, char const *argv[]){
+    node *root = NULL;
     input input;
     char head[] = "NOKIYEM CELLULAR PHONE";
     int ans;
@@ -60,9 +57,10 @@ int main(int argc, char const *argv[]){
             fflush(stdin);
             switch(ans){
                 case 1:
-                    add(&input);
+                    add(&root, &input);
                     break;
                 case 2:
+                    /*
                     if(root != NULL)
                         update();
                     else{
@@ -70,6 +68,7 @@ int main(int argc, char const *argv[]){
                         getch();
                         clrscr;
                     }
+                    */
                 break;
                 case 3:
                     if(root != NULL)
@@ -81,9 +80,10 @@ int main(int argc, char const *argv[]){
                     }
                 break;
                 case 4:
-                    config();
-                    break;
-                case 5:
+                    /*
+                    while(root != NULL)
+                        pop();
+                    */
                    return 0;
                 default:
                     continue;
@@ -97,10 +97,9 @@ void menu(){
     printf("1. Add New Phone\n");
     printf("2. Update Phone Price\n");
     printf("3. InOrder, PreOrder, PostOrder\n");
-    printf("4. Config\n");
-    printf("5. Exit\n");
+    printf("4. Exit\n");
 }
-int add(input *input){
+int add(node **root, input *input){
     int status;
     _Bool flag, check_status;
     clrscr;
@@ -176,13 +175,12 @@ int add(input *input){
             printf("Input Phone Price [$50..$999]: $");
             randomPrice(input);
         }
+        //Debug
         //Check if Data is not exist in tree
-        check_status = check(input);
+        check_status = check(root, input);
         if(check_status == true){
-            printf("\n\n");
             fprintf(stderr, "Error: Phone Code Already Exists...");
             sleep(1);
-            clrscr;
             continue;
         }
         else
@@ -190,7 +188,7 @@ int add(input *input){
     } while(1);
     printf("\n\n\n");
     /* Push */
-    status = push(input);
+    status = push(root, input);
     /********/
     if(status == SUCCESS)
         printf("--- Add New Phone Success ---");
@@ -216,9 +214,9 @@ void randomPrice(input *input){
     input->price = 50 + rand() % (999 + 1 - 50);
     printf("%d", input->price);
 }
-_Bool check(input *input){
+_Bool check(node **root, input *input){
     /* I compare the code data based on ASCII Numbering, check https://www.tutorialspoint.com/c_standard_library/c_function_strcmp.htm */
-    node *ptr = root;
+    node *ptr = *root;
     while(1){
         if(ptr == NULL)
             return false;
@@ -230,7 +228,7 @@ _Bool check(input *input){
             ptr = ptr->right;
     }
 }
-int push(input *input){
+int push(node **root, input *input){
     node *temp = (node *) malloc(sizeof(node));
     node *ptr;
     /* Scenario 1: If Memory didn't allocated */
@@ -248,15 +246,15 @@ int push(input *input){
         temp->right = NULL;
         /* Looping for moving pointer, if node location established, return success status
         And to be noted: I compare the code data based on ASCII Numbering, check https://www.tutorialspoint.com/c_standard_library/c_function_strcmp.htm */
-        /* Scenario 2.1: If there is no Node available */
-        if(root == NULL){
-            root = temp; //Place root pointer to new node
-            return SUCCESS; //Return success status
-        } 
-        /* Scenario 2.2: If there is node available */
-        else{
-            ptr = root;
-            while(1){
+        while(1){
+            /* Scenario 2.1: If there is no Node available */
+            if(root == NULL){
+                *root = temp; //Place root pointer to new node
+                return SUCCESS; //Return success status
+            } 
+            /* Scenario 2.2: If there is node available */
+            else{
+                ptr = *root;
                 /* Scenario 2.2.1: If code in temp is smaller than code in pointer location and left leaf is empty */
                 if(strcmp(ptr->code, temp->code) < 0 && ptr->left == NULL){
                     ptr->left = temp;
@@ -274,106 +272,11 @@ int push(input *input){
                 else if(strcmp(ptr->code, temp->code) > 0 && ptr->right != NULL)
                     ptr = ptr->right;
             }
+            
         }
     }
 }
-void update(){
-    node *ptr;
-    char input[10];
-    _Bool status, flag;
-    clrscr;
-    printf("List of phones:\n");
-    preorder(root);
-    printf("\n\n");
-    //Input Code
-    do{
-        printf("Input Phone Code N[1-9][0-9][0-9][0-9]: ");
-        //First Array
-        do{
-            input[0] = getch();
-            fflush(stdin);
-            if(input[0] == 'N'){
-                printf("%c", input[0]);
-                break;
-            }
-        } while(1);
-        //Second Array
-        do{
-            input[1] = getch();
-            fflush(stdin);
-            if(input[1] >= '1' && input[1] <= '9'){
-                printf("%c", input[1]);
-                break;
-            }
-        } while(1);
-        //Third Array
-        do{
-            input[2] = getch();
-            fflush(stdin);
-            if(input[2] >= '0'  && input[2] <= '9'){
-                printf("%c", input[2]);
-                break;
-            }
-        } while(1);
-        //Fourth Array
-        do{
-            input[3] = getch();
-            fflush(stdin);
-            if(input[3] >= '0' && input[3] <= '9'){
-                printf("%c", input[3]);
-                break;
-            }
-        } while(1);
-        //Fifth Array
-        do{
-            input[4] = getch();
-            fflush(stdin);
-            if(input[4] >= '0' && input[4] <= '9'){
-                printf("%c", input[4]);
-                flag = true;
-                break;
-            }
-        } while(1);
-        if(flag == true){
-            break;
-        }
-    } while(1);
-    status = search(input, ptr);
-    if(status == true){
-        printf("\n\n\n");
-        printf("--- Update Phone Price Success ---");
-    } else{
-        printf("\n\n");
-        printf("--- Phone Code is Not Found ---");
-    }
-    getch();
-    clrscr;
-}
-_Bool search(char *input, node *ptr){
-    int new_price;
-    ptr = root;
-    while(1){
-        if(strcmp(input, ptr->code) < 0 && ptr->right != NULL)
-            ptr = ptr->right;
-        else if(strcmp(input, ptr->code) > 0 && ptr->left != NULL)
-            ptr = ptr->left;
-        else if(strcmp(input, ptr->code) == 0){
-            printf("\n\n");
-            printf("Phone Code: %s\n", ptr->code);
-            printf("Phone Price: $ %d\n", ptr->price);
-            printf("\n\n");
-            printf("Input New Phone Price [$50..$999]: $ ");
-            scanf("%d", &new_price);
-            fflush(stdin);
-            //Change the price of selected data
-            ptr->price = new_price;
-            return true;
-        }
-        else if(strcmp(input, ptr->code) < 0 || strcmp(input, ptr->code) > 0 && ptr->left == NULL || ptr->right == NULL)
-            return false;
-    }
-}
-void order(){
+void order(node *root){
     clrscr;
     printf("Preorder :\n");
     preorder(root);
@@ -413,16 +316,15 @@ void postorder(node *tree){
     }
     return;
 }
-void config(){
-    char ans;
-    clrscr;
-    printf("Randomize input? [y/n]: ");
-    ans = getch();
-    if(ans == 'y'){
-        if(random_status == true)
-            random_status = false;
-        else if(random_status == false)
-            random_status = true;
-    }
-    clrscr;
-}
+/*
+    Note:
+    The program didn't run as I expected
+    In Push function seem there is a logic error, but I didn't found it
+    And my check function for checking if input data not same as data
+    Who already in node, is not working
+    But when run the program, the Push function return success status
+    and check function runs as normal, but its like just get bypassed
+    Nothing happened...
+    But when try to look the data, the root still in NULL condition
+    Need someone to take a look at this...
+*/
