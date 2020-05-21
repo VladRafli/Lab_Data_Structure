@@ -13,6 +13,8 @@
 #include <conio.h>
 #include "uttils.h"
 
+#define MATRIX_SIZE 10
+
 typedef struct Node node;
 struct Node{
     int vertex;
@@ -23,10 +25,11 @@ struct Graph {
 };
 
 void menu();
-void inputVertices();
+void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
 void adjMatrix();
 void adjList();
 void deg();
+void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
 
 int main(int argc, char const *argv[])
 {
@@ -65,47 +68,85 @@ void menu(){
     printf("4. Exit\n\n");
 }
 void adjMatrix(){
-    inputVertices();
+    int matrix[MATRIX_SIZE][MATRIX_SIZE];
+    int vertSiz; //Vertices Size
+    inputVertices(matrix, &vertSiz);
+    printMatrix(matrix, &vertSiz);
     getch();
     clrscr;
 }
 void adjList(){
-    inputVertices();
+    int matrix[MATRIX_SIZE][MATRIX_SIZE];
+    int vertSiz; //Vertices Size
+    inputVertices(matrix, &vertSiz);
     getch();
     clrscr;
 }
 void deg(){
-    inputVertices();
+    int matrix[MATRIX_SIZE][MATRIX_SIZE];
+    int vertSiz; //Vertices Size
+    inputVertices(matrix, &vertSiz);
     getch();
     clrscr;
 }
-void inputVertices(){
-    int vertSiz; //Vertices Size
+//Before: inputVertices(int *matrix, int *vertSiz)
+void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
     char ans;
     printf("\n\n");
     do
     {
         printf("How Many Vertices ? <max = 10> : ");
-        scanf("%d", &vertSiz);
+        scanf("%d", vertSiz);
         fflush(stdin);
-    } while (vertSiz < 2 || vertSiz > 10);
-    for(int i = 1; i <= vertSiz; i++){
-        for(int j = 1; j <= vertSiz; j++){
-            if(j != i){
-                do{
-                    printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i, j);
-                    ans = getch();
-                    fflush(stdin);
-                    if(ans == 'y' || ans == 'n'){
-                        printf("%c", ans);
-                        /* Set Vertice Adjacent */
-                        //Here
-                        /* */
-                        printf("\n\n");
-                        break;
+    } while (*vertSiz < 2 || *vertSiz > 10);
+    for(int i = 0; i < *vertSiz; i++){
+        for(int j = 0; j < *vertSiz; j++){
+            do{
+                printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i, j);
+                ans = getch();
+                fflush(stdin);
+                if(ans == 'y' || ans == 'n'){
+                    printf("%c", ans);
+                    /* Set Vertice Adjacent */
+                    if(ans == 'y'){
+                        /* Below how not to access array with pointer */
+                        //*((matrix + i) + j) = 1;
+                        //*(*(matrix + i) + j) = 1;
+                        matrix[i][j] = 1;
+                    } else if(ans == 'n'){
+                        /* Below how not to access array with pointer */
+                        //*((matrix + i) + j) = 0;
+                        //*(*(matrix + i) + j) = 0;
+                        matrix[i][j] = 0;
                     }
-                } while (1);
-            }
+                    /* */
+                    printf("\n\n");
+                    break;
+                }
+            } while (1);
         }
+    }
+}
+//Before: void printMatrix(int *matrix, int *vertSiz)
+void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
+    int i, j, k;
+    char text[] = "Adjacency Matrix of this Graph";
+    printf("\n\n");
+    header(strlen(text), text, "under");
+    printf("Vertex     ");
+    for(i = 1; i <= *vertSiz; i++){
+        printf("%d  ", i);
+    }
+    printf("\n\n");
+    for(i = 0; i < *vertSiz; i++){
+        k = i;
+        printf("    %d      ", k + 1);
+        for(j = 0; j < *vertSiz; j++){
+            /* Below how not to access array with pointer */
+            //printf("%d  ",*((matrix + i) + j));
+            //printf("%d  ", *(*(matrix + i) + j));
+            printf("%d  ", matrix[i][j]);
+        }
+        printf("\n\n");
     }
 }
