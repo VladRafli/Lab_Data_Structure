@@ -13,6 +13,9 @@
 #include <conio.h>
 #include "uttils.h"
 
+/* Define this for Debug */
+// #define DEBUG
+/* --------------------- */
 #define MATRIX_SIZE 10
 
 typedef struct Node node;
@@ -34,7 +37,9 @@ void adjMatrix();
 void adjList();
 void deg();
 void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
-void graphAdj(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
+void createGraph(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
+void connectVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
+void printAdjList(int *vertSiz);
 
 int main(int argc, char const *argv[])
 {
@@ -84,7 +89,9 @@ void adjList(){
     int matrix[MATRIX_SIZE][MATRIX_SIZE];
     int vertSiz; //Vertices Size
     inputVertices(matrix, &vertSiz);
-    graphAdj(matrix, &vertSiz);
+    createGraph(matrix, &vertSiz);
+    connectVertices(matrix, &vertSiz);
+    printAdjList(&vertSiz);
     getch();
     clrscr;
 }
@@ -112,7 +119,7 @@ void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
                     matrix[i][j] = 0;
                     break;
                 } else{
-                    printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i, j);
+                    printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i + 1, j + 1);
                     ans = getch();
                     fflush(stdin);
                     if(ans == 'y' || ans == 'n'){
@@ -127,6 +134,7 @@ void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
                         printf("\n\n");
                         break;
                     }
+                    printf("\n");
                 }
             } while (1);
         }
@@ -150,45 +158,103 @@ void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
         printf("\n\n");
     }
 }
-void graphAdj(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
-    int i, j;
+void createGraph(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
     node *temp;
     graph *newHeads, *graphPtr;
     //Create Node and Insert Number of each Vertices
-    for(i = 0; i < *vertSiz; i++){
+    for(int i = 0; i < *vertSiz; i++){
         temp = (node *) malloc(sizeof(node));
         newHeads = (graph *) malloc(sizeof(graph));
         temp->vertex = i + 1;
         temp->next = NULL;
-        printf("Graph Head:\n");
+        //Debug
+        #ifdef DEBUG
+        printf("Graph Head: ");
+        #endif
         if(i == 0){
-            newHeads->head = &temp;
+            newHeads->head = temp;
             newHeads->next = NULL;
             graphHead = newHeads;
-            printf("%d\n", graphHead->head); //Prints the Address
+            //Debug
+            #ifdef DEBUG
+            printf("%d\n", graphHead->head->vertex);
+            #endif
         } else{
             graphPtr = graphHead;
             while(graphPtr->next != NULL)
                 graphPtr = graphPtr->next;
             graphPtr->next = newHeads;
-            newHeads->head = &temp;
+            newHeads->head = temp;
             newHeads->next = NULL;
-            printf("%d\n", graphPtr->head); //Prints the Address
+            //Debug
+            #ifdef DEBUG
+            printf("%d\n", graphPtr->next->head->vertex);
+            #endif
         }
     }
-    /*
-    //Look for Matrix Adjacency each Node
-    for(i = 0; i < *vertSiz; i++){
-        for(j = 0; j < *vertSiz; j++){
-            if(i == j && j == i){
-                //Not Connect anything because its connecting to own node
-            } else if(matrix[i][j] == 0){
-                //Not Connect anything because its not adjecent
-            } else{
-                graphPtr = graphHead;
-                //Linked List Linear Search
+}
+void connectVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
+    graph *graphPtrSrc;
+    graph *graphPtrDest;
+    //Debug
+    #ifdef DEBUG
+    printf("Hey, I'm at Connecting Vertices Now!\n");
+    #endif
+    for(int i = 0; i < *vertSiz; i++){
+        for(int j = 0; j < *vertSiz; j++){
+            if(matrix[i][j] == 1){
+                graphPtrSrc = graphHead;
+                graphPtrDest = graphHead;
+                //Debug
+                #ifdef DEBUG
+                printf("Adjecent = %d Src = %d Dest = %d\n\n", matrix[i][j], i + 1, j + 1);
+                #endif
+                while(graphPtrSrc->head->vertex != i + 1){
+                    //Debug
+                    #ifdef DEBUG
+                    printf("%d != %d\n", graphPtrSrc->head->vertex, i + 1);
+                    #endif
+                    graphPtrSrc = graphPtrSrc->next;
+                    //Debug
+                    #ifdef DEBUG
+                    printf("I'm now moving pointer graphPtrSrc!\n");
+                    #endif
+                } 
+                while(graphPtrDest->head->vertex != j + 1){
+                    //Debug
+                    #ifdef DEBUG
+                    printf("%d != %d\n", graphPtrDest->head->vertex, j + 1);
+                    #endif
+                    graphPtrDest = graphPtrDest->next;
+                    //Debug
+                    #ifdef DEBUG
+                    printf("I'm now moving pointer graphPtrDest\n");
+                    #endif
+                }
+                graphPtrSrc->head->next = graphPtrDest->head;
+                //Debug
+                #ifdef DEBUG
+                printf("\nI'm now connecting Vertices together\n\n");
+                #endif
             }
         }
     }
-    */
+}
+void printAdjList(int *vertSiz){
+    graph *graphPtr;
+    node *nodePtr;
+    //Debug
+    #ifdef DEBUG
+    printf("Hey, I'm at Print Adjecent List Now!\n");
+    #endif
+    static const char text[] = "Adjacency List of This Graph";
+    header(strlen(text), text, "under");
+    printf("Vertex\n\n");
+    for(graphPtr = graphHead; graphPtr->next != NULL; graphPtr = graphPtr->next){
+        printf("    %d      ", graphPtr->head->vertex);
+        for(nodePtr = graphPtr->head; nodePtr->next != NULL; nodePtr = nodePtr->next){
+            printf("-> %d  ", nodePtr->vertex);
+        }
+        printf("\n\n");
+    }
 }
