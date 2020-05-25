@@ -20,9 +20,13 @@ struct Node{
     int vertex;
     node *next;
 };
-struct Graph {
-    node **heads;
+typedef struct Graph graph;
+struct Graph{
+    node *head;
+    graph *next;
 };
+
+graph *graphHead = NULL;
 
 void menu();
 void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
@@ -30,11 +34,12 @@ void adjMatrix();
 void adjList();
 void deg();
 void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
+void graphAdj(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz);
 
 int main(int argc, char const *argv[])
 {
     int ans;
-    char text[] = "Directed Graph Representation";
+    static const char text[] = "Directed Graph Representation";
     do{
         header(strlen(text), text, "under");
         menu();
@@ -79,6 +84,7 @@ void adjList(){
     int matrix[MATRIX_SIZE][MATRIX_SIZE];
     int vertSiz; //Vertices Size
     inputVertices(matrix, &vertSiz);
+    graphAdj(matrix, &vertSiz);
     getch();
     clrscr;
 }
@@ -102,35 +108,33 @@ void inputVertices(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
     for(int i = 0; i < *vertSiz; i++){
         for(int j = 0; j < *vertSiz; j++){
             do{
-                printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i, j);
-                ans = getch();
-                fflush(stdin);
-                if(ans == 'y' || ans == 'n'){
-                    printf("%c", ans);
-                    /* Set Vertice Adjacent */
-                    if(ans == 'y'){
-                        /* Below how not to access array with pointer */
-                        //*((matrix + i) + j) = 1;
-                        //*(*(matrix + i) + j) = 1;
-                        matrix[i][j] = 1;
-                    } else if(ans == 'n'){
-                        /* Below how not to access array with pointer */
-                        //*((matrix + i) + j) = 0;
-                        //*(*(matrix + i) + j) = 0;
-                        matrix[i][j] = 0;
-                    }
-                    /* */
-                    printf("\n\n");
+                if(i == j && j == i){
+                    matrix[i][j] = 0;
                     break;
+                } else{
+                    printf("Vertices %d & %d are Adjacent ? <Y/N> : ", i, j);
+                    ans = getch();
+                    fflush(stdin);
+                    if(ans == 'y' || ans == 'n'){
+                        printf("%c", ans);
+                        /* Set Vertice Adjacent */
+                        if(ans == 'y'){
+                            matrix[i][j] = 1;
+                        } else if(ans == 'n'){
+                            matrix[i][j] = 0;
+                        }
+                        /* ---------------------- */
+                        printf("\n\n");
+                        break;
+                    }
                 }
             } while (1);
         }
     }
 }
-//Before: void printMatrix(int *matrix, int *vertSiz)
 void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
-    int i, j, k;
-    char text[] = "Adjacency Matrix of this Graph";
+    int i, j;
+    static const char text[] = "Adjacency Matrix of this Graph";
     printf("\n\n");
     header(strlen(text), text, "under");
     printf("Vertex     ");
@@ -139,14 +143,52 @@ void printMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
     }
     printf("\n\n");
     for(i = 0; i < *vertSiz; i++){
-        k = i;
-        printf("    %d      ", k + 1);
+        printf("    %d      ", i + 1);
         for(j = 0; j < *vertSiz; j++){
-            /* Below how not to access array with pointer */
-            //printf("%d  ",*((matrix + i) + j));
-            //printf("%d  ", *(*(matrix + i) + j));
             printf("%d  ", matrix[i][j]);
         }
         printf("\n\n");
     }
+}
+void graphAdj(int matrix[MATRIX_SIZE][MATRIX_SIZE], int *vertSiz){
+    int i, j;
+    node *temp;
+    graph *newHeads, *graphPtr;
+    //Create Node and Insert Number of each Vertices
+    for(i = 0; i < *vertSiz; i++){
+        temp = (node *) malloc(sizeof(node));
+        newHeads = (graph *) malloc(sizeof(graph));
+        temp->vertex = i + 1;
+        temp->next = NULL;
+        printf("Graph Head:\n");
+        if(i == 0){
+            newHeads->head = &temp;
+            newHeads->next = NULL;
+            graphHead = newHeads;
+            printf("%d\n", graphHead->head); //Prints the Address
+        } else{
+            graphPtr = graphHead;
+            while(graphPtr->next != NULL)
+                graphPtr = graphPtr->next;
+            graphPtr->next = newHeads;
+            newHeads->head = &temp;
+            newHeads->next = NULL;
+            printf("%d\n", graphPtr->head); //Prints the Address
+        }
+    }
+    /*
+    //Look for Matrix Adjacency each Node
+    for(i = 0; i < *vertSiz; i++){
+        for(j = 0; j < *vertSiz; j++){
+            if(i == j && j == i){
+                //Not Connect anything because its connecting to own node
+            } else if(matrix[i][j] == 0){
+                //Not Connect anything because its not adjecent
+            } else{
+                graphPtr = graphHead;
+                //Linked List Linear Search
+            }
+        }
+    }
+    */
 }
